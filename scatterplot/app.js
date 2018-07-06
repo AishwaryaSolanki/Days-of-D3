@@ -11,7 +11,7 @@ var xScale = d3.scaleLinear()
 var yScale = d3.scaleLinear()
 				.domain(d3.extent(data, d => d.subscribersPer100))
 				.range([height - padding, padding]);
-				
+
 
 var rScale = d3.scaleLinear()
 				.domain(d3.extent(data, d => d.medianAge))
@@ -31,7 +31,13 @@ var yAxis = d3.axisLeft(yScale)
 
 var svg = d3.select("svg")
 			.attr("width", width)
-			.attr("height", height);
+			.attr("height", height)
+			.on("mousemove", showTooltip)
+			.on("mouseout", hideTooltip);
+
+var tooltip = d3.select('body')
+								.append('div')
+								.classed("tooltip");
 
 svg.append("g")
 	.attr("transform", "translate(0," + (height - padding) + ")")
@@ -87,4 +93,21 @@ function mustHave(obj){
 		if(obj[keys[i]] === null) return false;
 	}
 	return true;
+}
+
+function showTooltip(d){
+	tooltip
+		.style("opacity", 1)
+		.style("left", d3.event.x - (tooltip.node().offsetWidth / 2) + 'px')
+		.style("top", d3.event.y + 25 + 'px')
+		.html(`
+			<p>Region: $(d.region)</p>
+			<p>Subscribers/100: $(d.subscribersPer100)</p>
+			<p>Urban Population Rate: $(d.urbanPopulationRate)</p>
+			`);
+}
+
+function hideTooltip(){
+	tooltip
+		.style("opacity", 0);
 }
